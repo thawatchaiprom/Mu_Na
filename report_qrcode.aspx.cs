@@ -68,17 +68,32 @@ namespace StockMUNA
                 DataSetStock dsMember = new DataSetStock();
                 MySqlConnection cn = new MySqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["connection_stock"].ConnectionString);
                 cn.Open();
-                MySqlDataAdapter adapt = new MySqlDataAdapter("select stock_code,inv_no from stock_item  ", cn);
+                MySqlDataAdapter adapt = new MySqlDataAdapter("select stock_code,inv_no from stock_item where stock_code = 'TPS-009-002-001'  ", cn);
                 adapt.Fill(dsMember, "DataTableQrcode"); //DataTableQrcode DataSetQrcode
 
-                // Create and setup an instance of Bytescout Barcode SDK
 
+                string result;
+                var content = "abc-589-cdf-759";
+                var writer = new BarcodeWriter
+                {
+                    Format = BarcodeFormat.CODE_128
+                };
+                var bitmap = writer.Write(content);
 
-                // Update DataTable with barcode image
+                System.Drawing.Bitmap b = bitmap;
+                byte[] bytes;
+                using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
+                {
+                    b.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                    bytes = stream.ToArray();
+                   // result = Convert.ToBase64String(bytes, 0, bytes.Length); 
+                }
+
                 foreach (DataSetStock.DataTableQrcodeRow row in dsMember.DataTableQrcode.Rows)
                 {
                
                     row.test = "ddd";
+                    row.bacode = bytes;
                 }
 
                 //Providing DataSource for the Report   
@@ -112,7 +127,7 @@ namespace StockMUNA
                 //////////////////////////////////////////////////////// parameter byte
                
                
-                string result;
+             /*   string result;
                 var content = "abc-589-cdf-757";
                 var writer = new BarcodeWriter
                 {
@@ -127,13 +142,10 @@ namespace StockMUNA
                     b.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                     bytes = stream.ToArray();
                     result = Convert.ToBase64String(bytes, 0, bytes.Length); ;
-                }
+                }*/
 
 
-                /////////////////////////////////////////////////////////////////////
-                ReportParameter bitmap_bar = new ReportParameter("bitmab_barcode", result);
-                ReportViewer1.LocalReport.SetParameters(bitmap_bar);
-                ReportViewer1.LocalReport.Refresh();
+    
 
 
 
